@@ -1,4 +1,4 @@
-function [x] = Equiangular_Rays(c)
+function [x] = Equiangular_Rays(c,N)
 % Summary: creates x-coordinate vector through equiangular lines
 %   Creates x-coordinate vector using equiangular rays of radius half-chord
 %   about a center at half chord. This creates a x vector that is denser
@@ -6,6 +6,7 @@ function [x] = Equiangular_Rays(c)
 %   leading edge and trialing edge), starting at the leading edge and
 %   ending and the trailing edge.
 %   Inputs: 
+%   N: Number of panels
 %   c: chord length (m)
 %   Outputs:
 %   x: x-coordinate vector created via equiangular rays (m)
@@ -13,7 +14,7 @@ function [x] = Equiangular_Rays(c)
 %   Author: Colton Firster
 %   Collaborators: Josh Bumann, Clara Eide, Lane Hollis
 %   Date: 3/31/2026
-
-theta = 0:1:180; % angle vector from 0 to 180 deg equally spaced by 1 deg
+s = 180/(N+1); % degrees of spcaing between each point
+theta = 0:s:180; % angle vector from 0 to 180 deg equally spaced by 1 deg
 x = c/2 - c/2 * cosd(theta); % x vector from equiangular rays
 end
