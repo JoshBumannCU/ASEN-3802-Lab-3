@@ -14,7 +14,6 @@ function [x] = Equiangular_Rays(c,N)
 %   Author: Colton Firster
 %   Collaborators: Josh Bumann, Clara Eide, Lane Hollis
 %   Date: 3/31/2026
-s = 180/(N+1); % degrees of spcaing between each point
-theta = 0:s:180; % angle vector from 0 to 180 deg equally spaced by 1 deg
+theta = linspace(0,180,N+1); % angle vector from 0 to 180 deg equally spaced
 x = c/2 - c/2 * cosd(theta); % x vector from equiangular rays
 end

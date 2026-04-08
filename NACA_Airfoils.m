@@ -3,8 +3,7 @@ function [x_b, y_b, x, y_c] = NACA_Airfoils(m,p,t,c,N)
 % Take user inputs from main function and calculates the appropriate
 % positions of points to plot the airfoil then returns them to the main function. 
 %
-% Authors: Josh Bumann, Lane Hollis
-% Collaborators: Colton Firster, Clara Eide
+% Collaborators: Josh Bumann, Clara Eide, Colton Firster, Lane Hollis
 % Date: 4/7/2026
     % x_b is a vector containing the x-location of the boundary points
     % y_b is a vector containing the y-location of the boundary points
@@ -55,11 +54,8 @@ function [x_b, y_b, x, y_c] = NACA_Airfoils(m,p,t,c,N)
     xl = x + yt .* sin(zeta);
     yl = y_c - yt .* cos(zeta);
 
-    % Still to do: add the TE clockwise order
-
     % Combine upper and lower surface coordinates
     x_b = [flip(xl), xu(2:end)];
     y_b = [flip(yl), yu(2:end)];
-
 
 end
