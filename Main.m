@@ -146,9 +146,9 @@ for i = 1:length(AoA)
     cl_VortexPannel_0012(i) = Vortex_Panel(x_b_0012,y_b_0012,[],AoA(i));
 end
 % Experimental
-data0012 = readmatrix('NACA_0012_digitized.xlsx');
-ExperimentalAoA_0012 = data0012(:,1);
-cl_experimental_0012 = data0012(:,2);
+data0012 = readmatrix('NACA_0012_digitized.xlsx'); % The data we need is actually in 3 and 4 not 1 and 2. Same for 4412!!!
+ExperimentalAoA_0012 = data0012(:,3);
+cl_experimental_0012 = data0012(:,4);
 
 
 % NACA 0018
