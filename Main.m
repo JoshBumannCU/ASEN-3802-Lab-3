@@ -108,3 +108,89 @@ fprintf('Minimum number of panels per surface: %d\n', N_1percent);
 fprintf('Minimum total number of panels: %d\n', N_tot_1percent);
 fprintf('Coefficient of Lift for NACA 0012 within 1 percent error: %.8f\n', cl_1percent);
 fprintf('Associated error as a percentage: %.8f%%\n', error_1percent);
+
+%% TASK 3
+
+AoA = linspace(-15,15,100); % degrees
+
+% pull out m, p and t values for each airfoil
+
+% NACA 0006
+m_0006 = 0.00; p_0006 = 0.00; t_0006 = 0.06; 
+% NACA 0012
+m_0012 = 0.00; p_0012 = 0.00; t_0012 = 0.12;
+% NACA 0018
+m_0018 = 0.00; p_0018 = 0.00; t_0018 = 0.18;
+
+% get the cls for each airfoil with each method
+
+% NACA 0006
+% Thin Airfoil
+[cl_ThinAirfoil_0006,~] = ThinAirfoilTheory(c, m_0006, p_0006, AoA);
+% Vortex Pannel
+[x_b_0006, y_b_0006,~,~] = NACA_Airfoils(m_0006, p_0006, t_0006, c, N_surface);
+for i = 1:length(AoA)
+    cl_VortexPannel_0006(i) = Vortex_Panel(x_b_0006,y_b_0006,[],AoA(i));
+end
+% Experimental
+data0006 = readmatrix('NACA_0006_digitized.xlsx');
+ExperimentalAoA_0006 = data0006(:,1);
+cl_experimental_0006 = data0006(:,2);
+
+% NACA 0012
+% Thin Airfoil
+[cl_ThinAirfoil_0012,ZLAoA_TAT_0012] = ThinAirfoilTheory(c, m_0012, p_0012, AoA);
+% Vortex Pannel
+[x_b_0012, y_b_0012,~,~] = NACA_Airfoils(m_0012, p_0012, t_0006, c, N_surface);
+for i = 1:length(AoA)
+    cl_VortexPannel_0012(i) = Vortex_Panel(x_b_0012,y_b_0012,[],AoA(i));
+end
+% Experimental
+data0012 = readmatrix('NACA_0012_digitized.xlsx');
+ExperimentalAoA_0012 = data0012(:,1);
+cl_experimental_0012 = data0012(:,2);
+
+
+% NACA 0018
+% Thin Airfoil
+[cl_ThinAirfoil_0018,~] = ThinAirfoilTheory(c, m_0018, p_0018, AoA);
+% Vortex Pannel
+[x_b_0018, y_b_0018,~,~] = NACA_Airfoils(m_0018, p_0018, t_0018, c, N_surface);
+for i = 1:length(AoA)
+    cl_VortexPannel_0018(i) = Vortex_Panel(x_b_0018,y_b_0018,[],AoA(i));
+end
+% NO EXPERIMENTAL DATA FOR THIS AIRFOIL
+
+% Plotting all-together on one plot
+
+figure();
+hold on;
+grid on;
+
+
+% 0006 
+plot(AoA, cl_ThinAirfoil_0006,'r');
+plot(AoA,cl_VortexPannel_0006,'--r');
+step = 5;
+plot(ExperimentalAoA_0006(1:step:end),cl_experimental_0006(1:step:end),'.r');
+
+% 0012
+plot(AoA, cl_ThinAirfoil_0012,'b');
+plot(AoA,cl_VortexPannel_0012,'--b');
+plot(ExperimentalAoA_0012(1:step:end),cl_experimental_0012(1:step:end),'.b');
+
+%0018
+plot(AoA, cl_ThinAirfoil_0018,'g');
+plot(AoA,cl_VortexPannel_0018,'--g');
+
+title('Cl vs AoA for NACA 0006, 0012 and 0018')
+xlabel('Angle of Attack (degrees)')
+ylabel('cl')
+legend('0006 - Thin Airfoil', '0006 - Vortex Pannel', '0006 - experimental', ...
+    '0012 - Thin Airfoil', '0012 - Vortex Pannel', '0012 - experimental', ...
+    '0018 - Thin Airfoil', '0018 - Vortex Pannel','Location','southeast','Fontsize',6)
+
+%% TASK 4
+
+disp(['Zero Lift Angle of Attack of 0012 based on TAT = ', num2str(ZLAoA_TAT_0012)])
+
