@@ -2,6 +2,7 @@ clc
 clear
 close all
 %% Lab 3 Part 2
+% Contributors: Josh Bumann, Clara Eide, Colton Firster, Lane Hollis
 
 % Set variables for PLLT function
 a0_t = 2*pi; % cross-section lift slope at tip (/rad)
