@@ -118,3 +118,8 @@ fprintf('Coefficient of Induced Drag within 1 percent error: %.8f\n', c_Di_1perc
 fprintf('N value for 1 percent error: %d\n', c_Di_N_1percent);
 fprintf('Coefficient of Induced Drag within 0.1 percent error: %.8f\n', c_Di_tenthpercent);
 fprintf('N value for 0.1 percent error: %d\n', c_Di_N_tenthpercent);
+
+%% Plotting
+
+Part3Plots(c_L_values,c_Di_values,N_test,c_Di_N_1percent,c_Di_N_10percent,c_Di_N_tenthpercent,c_L_N_1percent,c_L_N_10percent,c_L_N_tenthpercent)
+
