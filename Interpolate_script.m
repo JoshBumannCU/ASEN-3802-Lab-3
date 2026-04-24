@@ -13,7 +13,7 @@ nanRows = any(isnan(drag_2412_raw), 2);
 drag_2412_raw(nanRows, :) = [];
 
 
-% Read digitized CL-vs-AoA data
+% Read digitized data
 cl_as_funct_of_AoA_0012 = readmatrix("NACA_0012_digitized.xlsx");
 cl_as_funct_of_AoA_2412 = readmatrix("NACA_2412_digitized.xlsx");
 
@@ -48,9 +48,6 @@ common_aoa = (minAoA : dAoA : maxAoA)';
 
 % Replace NaNs
 valid1 = isfinite(aoa_0012) & isfinite(CL_vs_AoA_0012);
-if ~any(valid1)
-    error('No valid data in cl_as_funct_of_AoA_0012 for interpolation.');
-end
 % Clean and sort for interp1
 [aoa1_s, idx1] = sort(aoa_0012(valid1));
 cl1_s = CL_vs_AoA_0012(valid1);
