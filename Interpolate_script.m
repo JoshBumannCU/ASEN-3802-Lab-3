@@ -100,12 +100,9 @@ legend('Location','best');
 outFile = "cd_vs_aoa_export.xlsx";
 
 % Create tables with appropriate column names
-T0012 = table(cd_as_funct_of_AoA_0012(:,1), cd_as_funct_of_AoA_0012(:,2), ...
-    'VariableNames', {'AoA_deg', 'Cd'});
-T2412 = table(cd_as_funct_of_AoA_2412(:,1), cd_as_funct_of_AoA_2412(:,2), ...
-    'VariableNames', {'AoA_deg', 'Cd'});
-Tavg  = table(cd_avg(:,1), cd_avg(:,2), ...
-    'VariableNames', {'AoA_deg', 'Cd'});
+T0012 = table(cd_as_funct_of_AoA_0012(:,1), cd_as_funct_of_AoA_0012(:,2), 'VariableNames', {'AoA_deg', 'Cd'});
+T2412 = table(cd_as_funct_of_AoA_2412(:,1), cd_as_funct_of_AoA_2412(:,2), 'VariableNames', {'AoA_deg', 'Cd'});
+Tavg  = table(cd_avg(:,1), cd_avg(:,2), 'VariableNames', {'AoA_deg', 'Cd'});
 
 % Write each table to its own sheet 
 writetable(T0012, outFile, 'Sheet', 'NACA_0012', 'WriteMode', 'overwrite');
