@@ -123,3 +123,29 @@ fprintf('N value for 0.1 percent error: %d\n', c_Di_N_tenthpercent);
 
 Part3Plots(c_L_values,c_Di_values,N_test,c_Di_N_1percent,c_Di_N_10percent,c_Di_N_tenthpercent,c_L_N_1percent,c_L_N_10percent,c_L_N_tenthpercent)
 
+data = readmatrix("cd_vs_aoa_export.xlsx");
+
+AoA_values = data(:,1);
+cd = data(:,2);
+
+for i = 1:length(AoA_values)
+    if abs(AoA_values(i) - 4) <= 0.03
+        cd_4 = cd(i);
+    end
+end
+
+% Deliverable 3
+[L_4,Di_4,D_4,LD_4] = LiftDragFunction(cd_4,c_L_tenthpercent, c_Di_tenthpercent,AoA,false);
+
+% Deliverable 4/5
+
+% loop through pllt to get cl and cdi for every AoA value
+for i = 1:length(AoA_values)
+    geo_r = AoA_values(i) + 1;
+    geo_t = AoA_values(i);
+
+    [e, c_L(i), c_Di(i)] = PLLT(b, a0_t, a0_r, c_t, c_r, aero_t, aero_r, geo_t, geo_r, 50);
+end
+
+% pull values from function (and plot!)
+[L, Di, D, LD] = LiftDragFunction(cd,c_L,c_Di,AoA_values,true);
