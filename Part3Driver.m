@@ -1,18 +1,15 @@
 %% Part 3 Driver
+% Collaborators: Josh Bumann, Clara Eide, Colton Firster, Lane Hollis
+% Date: 4/24/2026
 clc; clear; close all;
-% workflow
-% hardcode inputs into thin airfoil theory
-% m, c, p, AoA
-% outputs
-% cl, ZeroLiftAoA
-% PLLT
-% inputs
-% b, a0_t, a0_r, c_t, c_r, aero_t, aero_r, geo_t, geo_r
 
+%% ASEN 3802 - Part 3 - Task 1 - Find CL and CDi Values
 b = 33 + 4/12; % 33' 4"
 c_r = 5 + 4/12; % 5' 4"
 c_t = 3 + 8.5/12; % 3' 8.5"
 AoA = 4; % deg
+geo_t = AoA; % deg
+geo_r = AoA + 1; % deg
 
 % NACA code follows the following format
 % m is the maximum camber and the first digit
@@ -25,20 +22,77 @@ AoA = 4; % deg
 
 % NACA 2412 (root)
 m_2412 = 2/100; p_2412 = 40/100; t_2412 = 12/100;
-[cl_2412, aero_r] = ThinAirfoilTheory(c_r, m_2412, p_2412, AoA);
 
 % NACA 0012 (tip)
 m_0012 = 0/100; p_0012 = 0/100; t_0012 = 12/100;
-[cl_0012, aero_t] = ThinAirfoilTheory(c_t, m_0012, p_0012, AoA);
+
+N_airfoil = 100; % Aribitrary value to get our a0 and aero for root and tip
+[xb_r, yb_r, ~, ~] = NACA_Airfoils(m_2412, p_2412, t_2412, c_r, N_airfoil);
+
+% The sectional lift curve slope is defined as cL over AoA
+% Finding cL from VPM and linearly fitting against AoA will allow us to
+% estimate
+
+alphas = -10:1:10; % AoAs from -10 to 10 deg to fit our slope
+cl_r = zeros(size(alphas));
+
+for i = 1:length(alphas)
+    cl_r(i) = Vortex_Panel(xb_r, yb_r, [], alphas(i)); % VINF blank/unused
+end
+
+% Fitting our linear line b/w cl and AoA at the root
+root_line = polyfit(alphas, cl_r, 1);
+
+a0_r_deg = root_line(1); % First value is our slope in degrees
+b_r = root_line(2); % Second value is our y-intercept
+
+a0_r = a0_r_deg * 180/pi; % PLLT uses a0 per radian
+
+% cl_r = a0_r_deg * alpha + b_r
+% (Our lift slope relation in the form y = mx + b
+% We want to find aero_r. This is when cl_r is 0.
+% 0 = a0_r_deg * alpha + b_r
+% Solving for alpha yields the following,
+
+aero_r = -b_r / a0_r_deg;
 
 
-% Define additional parameters for PLLT
-a0_t = 2 * pi; % lift curve slope for tip airfoil
-a0_r = 2 * pi; % lift curve slope for root airfoil
-geo_t = 0; % deg
-geo_r = 1; % deg
-N = 1000; % number of fourier terms for "exact" solution
-[e, c_L_exact, c_Di_exact] = PLLT(b, a0_t, a0_r, c_t, c_r, aero_t, aero_r, geo_t, geo_r, N);
+
+% Repeat the same process to find a0_t and aero_t
+
+[xb_t, yb_t, ~, ~] = NACA_Airfoils(m_0012, p_0012, t_0012, c_t, N_airfoil);
+
+% The sectional lift curve slope is defined as cL over AoA
+% Finding cL from VPM and linearly fitting against AoA will allow us to
+% estimate
+
+alphas = -10:1:10; % AoAs from -10 to 10 deg to fit our slope
+cl_t = zeros(size(alphas));
+
+for i = 1:length(alphas)
+    cl_t(i) = Vortex_Panel(xb_t, yb_t, [], alphas(i)); % VINF blank/unused
+end
+
+% Fitting our linear line b/w cl and AoA at the root
+root_line = polyfit(alphas, cl_t, 1);
+
+a0_t_deg = root_line(1); % First value is our slope in degrees
+b_t = root_line(2); % Second value is our y-intercept
+
+a0_t = a0_t_deg * 180/pi; % PLLT uses radians
+
+% cl_t = a0_t_deg * alpha + b_t
+% (Our lift slope relation in the form y = mx + b
+% We want to find aero_t. This is when cl_t is 0.
+% 0 = a0_t_deg * alpha + b_t
+% Solving for alpha yields the following,
+
+aero_t = -b_t / a0_t_deg;
+
+
+% PLLT to find our "exact" CL and CDi
+N_pllt = 1000; % number of fourier terms for "exact" solution
+[e, c_L_exact, c_Di_exact] = PLLT(b, a0_t, a0_r, c_t, c_r, aero_t, aero_r, geo_t, geo_r, N_pllt);
 
 % Generates an array of terms to test and initializes storage for the cL, 
 % c_Di, and error values calculated with that number of Fourier terms
@@ -83,24 +137,24 @@ c_Di_N_1percent = N_test(c_Di_N_index_1);
 c_Di_N_tenthpercent = N_test(c_Di_N_index_tenth); 
 
 % cL values at said index
-c_L_10percent = c_L_values(c_L_N_10percent);
-c_L_1percent = c_L_values(c_L_N_1percent);
-c_L_tenthpercent = c_L_values(c_L_N_tenthpercent);
+c_L_10percent = c_L_values(c_L_N_index_10);
+c_L_1percent = c_L_values(c_L_N_index_1);
+c_L_tenthpercent = c_L_values(c_L_N_index_tenth);
 
 % cDi values at said index
-c_Di_10percent = c_Di_values(c_Di_N_10percent);
-c_Di_1percent = c_Di_values(c_Di_N_1percent);
-c_Di_tenthpercent = c_Di_values(c_Di_N_tenthpercent);
+c_Di_10percent = c_Di_values(c_Di_N_index_10);
+c_Di_1percent = c_Di_values(c_Di_N_index_1);
+c_Di_tenthpercent = c_Di_values(c_Di_N_index_tenth);
 
 % Error values for cL
-c_L_error_10percent = c_L_error_values(c_L_N_10percent);
-c_L_error_1percent = c_L_error_values(c_L_N_1percent);
-c_L_error_tenthpercent = c_L_error_values(c_L_N_tenthpercent);
+c_L_error_10percent = c_L_error_values(c_L_N_index_10);
+c_L_error_1percent = c_L_error_values(c_L_N_index_1);
+c_L_error_tenthpercent = c_L_error_values(c_L_N_index_tenth);
 
 % Error values for cDi
-c_Di_error_10percent = c_Di_error_values(c_Di_N_10percent);
-c_Di_error_1percent = c_Di_error_values(c_Di_N_1percent);
-c_Di_error_tenthpercent = c_Di_error_values(c_Di_N_tenthpercent);
+c_Di_error_10percent = c_Di_error_values(c_Di_N_index_10);
+c_Di_error_1percent = c_Di_error_values(c_Di_N_index_1);
+c_Di_error_tenthpercent = c_Di_error_values(c_Di_N_index_tenth);
 
 % Print results to command window
 fprintf('Exact Coefficient of Lift: %.8f\n', c_L_exact);
@@ -119,33 +173,7 @@ fprintf('N value for 1 percent error: %d\n', c_Di_N_1percent);
 fprintf('Coefficient of Induced Drag within 0.1 percent error: %.8f\n', c_Di_tenthpercent);
 fprintf('N value for 0.1 percent error: %d\n', c_Di_N_tenthpercent);
 
-%% Plotting
+%% Task 2 - Plotting
 
 Part3Plots(c_L_values,c_Di_values,N_test,c_Di_N_1percent,c_Di_N_10percent,c_Di_N_tenthpercent,c_L_N_1percent,c_L_N_10percent,c_L_N_tenthpercent)
 
-data = readmatrix("cd_vs_aoa_export.xlsx");
-
-AoA_values = data(:,1);
-cd = data(:,2);
-
-for i = 1:length(AoA_values)
-    if abs(AoA_values(i) - 4) <= 0.03
-        cd_4 = cd(i);
-    end
-end
-
-% Deliverable 3
-[L_4,Di_4,D_4,LD_4] = LiftDragFunction(cd_4,c_L_tenthpercent, c_Di_tenthpercent,AoA,false);
-
-% Deliverable 4/5
-
-% loop through pllt to get cl and cdi for every AoA value
-for i = 1:length(AoA_values)
-    geo_r = AoA_values(i) + 1;
-    geo_t = AoA_values(i);
-
-    [e, c_L(i), c_Di(i)] = PLLT(b, a0_t, a0_r, c_t, c_r, aero_t, aero_r, geo_t, geo_r, 50);
-end
-
-% pull values from function (and plot!)
-[L, Di, D, LD] = LiftDragFunction(cd,c_L,c_Di,AoA_values,true);
