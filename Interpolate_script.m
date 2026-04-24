@@ -62,9 +62,6 @@ if any(~isfinite(CL_on_common_0012))
 end
 
 valid2 = isfinite(aoa_2412) & isfinite(CL_vs_AoA_2412);
-if ~any(valid2)
-    error('No valid data in cl_as_funct_of_AoA_2412 for interpolation.');
-end
 [aoa2_s, idx2] = sort(aoa_2412(valid2));
 cl2_s = CL_vs_AoA_2412(valid2);
 cl2_s = cl2_s(idx2);
